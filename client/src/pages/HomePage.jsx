@@ -9,36 +9,32 @@ const HomePage = () => {
     <div className="home-page">
       <section className="hero-section">
         <h1 className="hero-title">Confessions</h1>
-        <p className="hero-subtitle">Say what you've never said before.</p>
+        <p className="hero-subtitle">Anonymous messages with automatic expiration.</p>
         <p className="hero-desc">
-          Share your secrets, thoughts, and confessions completely anonymously. 
-          They vanish forever when time runs out.
+          Share thoughts anonymously. Each post is automatically deleted once its duration expires.
         </p>
         <div className="hero-actions">
-          <Link to="/confessions" className="btn-primary">Browse Confessions</Link>
+          <Link to="/confessions" className="btn-primary">Browse confessions</Link>
           {isAuthenticated ? (
-            <Link to="/confessions/create" className="btn-secondary">Create Confession</Link>
+            <Link to="/confessions/create" className="btn-secondary">Write confession</Link>
           ) : (
-            <Link to="/login" className="btn-secondary">Login to Create</Link>
+            <Link to="/login" className="btn-secondary">Sign in to write</Link>
           )}
         </div>
       </section>
 
       <section className="features-section">
         <div className="feature-card">
-          <div className="feature-icon">🎭</div>
           <h3>Anonymous</h3>
-          <p>Your identity is fully protected. No one will ever know it's you.</p>
+          <p>No usernames or profile links are attached to public confessions.</p>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">⏳</div>
-          <h3>Temporary</h3>
-          <p>Set a timer. Once it hits zero, your confession is gone forever.</p>
+          <h3>Self-expiring</h3>
+          <p>Choose an expiration window between 1 hour and 7 days. Posts are removed automatically.</p>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">🔒</div>
-          <h3>Secure</h3>
-          <p>End-to-end peace of mind. A safe space for your truest thoughts.</p>
+          <h3>Simple</h3>
+          <p>No feeds, algorithms, or engagement metrics. Just plain text notes that disappear.</p>
         </div>
       </section>
     </div>

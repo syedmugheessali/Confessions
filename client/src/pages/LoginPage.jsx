@@ -32,7 +32,7 @@ const LoginPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>Welcome Back</h2>
+        <h2>Sign In</h2>
         {error && <div className="form-error">{error}</div>}
         
         <form onSubmit={handleSubmit}>
@@ -44,7 +44,7 @@ const LoginPage = () => {
               value={formData.email} 
               onChange={handleChange} 
               required 
-              placeholder="you@example.com"
+              placeholder="name@example.com"
             />
           </div>
           
@@ -61,12 +61,12 @@ const LoginPage = () => {
           </div>
           
           <button type="submit" className="btn-primary full-width" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
         
         <p className="auth-link">
-          Don't have an account? <Link to="/register">Register here</Link>
+          Don't have an account? <Link to="/register">Create account</Link>
         </p>
       </div>
     </div>

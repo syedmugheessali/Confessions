@@ -26,15 +26,15 @@ const Navbar = () => {
           
           {isAuthenticated ? (
             <>
-              <NavLink to="/confessions/create" onClick={closeMenu}>Create</NavLink>
+              <NavLink to="/confessions/create" onClick={closeMenu}>Write</NavLink>
               <NavLink to="/confessions/my" onClick={closeMenu}>My Confessions</NavLink>
               <NavLink to="/profile" onClick={closeMenu}>Profile</NavLink>
-              <button className="btn-logout" onClick={() => { logout(); closeMenu(); }}>Logout</button>
+              <button className="btn-logout" onClick={() => { logout(); closeMenu(); }}>Sign out</button>
             </>
           ) : (
             <>
-              <NavLink to="/login" onClick={closeMenu}>Login</NavLink>
-              <NavLink to="/register" className="btn-register" onClick={closeMenu}>Register</NavLink>
+              <NavLink to="/login" onClick={closeMenu}>Sign in</NavLink>
+              <NavLink to="/register" className="btn-register" onClick={closeMenu}>Sign up</NavLink>
             </>
           )}
         </div>

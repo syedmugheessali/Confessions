@@ -54,8 +54,8 @@ const ConfessionDetailPage = () => {
         </div>
         
         <div className="detail-footer">
-          <div className={`countdown-large ${isExpired ? 'text-danger' : 'text-accent'}`}>
-            <span>⏳</span> {isExpired ? 'This confession has expired' : `Expires in ${formatted}`}
+          <div className={`countdown-large ${isExpired ? 'text-danger' : ''}`}>
+            {isExpired ? 'This confession has expired' : `Expires in ${formatted}`}
           </div>
         </div>
       </div>

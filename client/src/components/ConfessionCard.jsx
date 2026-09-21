@@ -37,9 +37,8 @@ const ConfessionCard = ({ confession, onDelete }) => {
         <p className="content">{confession.content}</p>
       </div>
       <div className="card-footer">
-        <div className={`countdown ${isExpired ? 'text-danger' : 'text-accent'}`}>
-          <span className="timer-icon">⏳</span> 
-          {isExpired ? 'Expired' : formatted}
+        <div className={`countdown ${isExpired ? 'text-danger' : ''}`}>
+          {isExpired ? 'Expired' : `Expires in ${formatted}`}
         </div>
         {onDelete && (
           <button 

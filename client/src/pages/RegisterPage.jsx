@@ -66,7 +66,7 @@ const RegisterPage = () => {
               value={formData.email} 
               onChange={handleChange} 
               required 
-              placeholder="you@example.com"
+              placeholder="name@example.com"
             />
           </div>
           
@@ -97,12 +97,12 @@ const RegisterPage = () => {
           </div>
           
           <button type="submit" className="btn-primary full-width" disabled={loading}>
-            {loading ? 'Creating...' : 'Register'}
+            {loading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
         
         <p className="auth-link">
-          Already have an account? <Link to="/login">Login here</Link>
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>
     </div>

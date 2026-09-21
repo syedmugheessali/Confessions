@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { createConfession } from '../services/confessionApi';
 
 const DURATION_OPTIONS = [
-  { label: '1 Hour', value: '1h' },
-  { label: '6 Hours', value: '6h' },
-  { label: '12 Hours', value: '12h' },
-  { label: '24 Hours', value: '24h' },
-  { label: '3 Days', value: '3d' },
-  { label: '7 Days', value: '7d' },
+  { label: '1 hour', value: '1h' },
+  { label: '6 hours', value: '6h' },
+  { label: '12 hours', value: '12h' },
+  { label: '24 hours', value: '24h' },
+  { label: '3 days', value: '3d' },
+  { label: '7 days', value: '7d' },
 ];
 
 const CreateConfessionPage = () => {
@@ -26,7 +26,7 @@ const CreateConfessionPage = () => {
       return;
     }
     if (content.length > 1000) {
-      setError('Confession is too long (max 1000 characters).');
+      setError('Confession is too long (maximum 1000 characters).');
       return;
     }
 
@@ -46,8 +46,8 @@ const CreateConfessionPage = () => {
   return (
     <div className="page-container create-page">
       <div className="create-card card-layout">
-        <h2>Unburden Yourself</h2>
-        <p className="subtitle-text">Write your confession below. It's completely anonymous.</p>
+        <h2>New Confession</h2>
+        <p className="subtitle-text">Write your note. It will be posted anonymously and deleted automatically.</p>
         
         {error && <div className="form-error">{error}</div>}
         
@@ -55,7 +55,7 @@ const CreateConfessionPage = () => {
           <div className="form-group">
             <textarea
               className="confession-textarea"
-              placeholder="I've been holding onto..."
+              placeholder="What would you like to say?"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows="6"
@@ -67,7 +67,7 @@ const CreateConfessionPage = () => {
           </div>
 
           <div className="form-group">
-            <label>Auto-delete after:</label>
+            <label>Expiration time:</label>
             <div className="duration-options">
               {DURATION_OPTIONS.map((d) => (
                 <button
@@ -83,7 +83,7 @@ const CreateConfessionPage = () => {
           </div>
 
           <button type="submit" className="btn-primary full-width" disabled={loading || !content.trim()}>
-            {loading ? 'Posting...' : 'Confess'}
+            {loading ? 'Publishing...' : 'Publish confession'}
           </button>
         </form>
       </div>

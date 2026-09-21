@@ -57,7 +57,7 @@ const FeedPage = () => {
       <div className="feed-header">
         <h2>Latest Confessions</h2>
         <button className="btn-secondary" onClick={handleRefresh}>
-          Refresh 🔄
+          Refresh
         </button>
       </div>
 
