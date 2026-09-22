@@ -15,4 +15,7 @@ connectDB().then(() => {
     // Close server & exit process
     server.close(() => process.exit(1));
   });
+}).catch((err) => {
+  console.error(`Failed to connect to MongoDB: ${err.message}`);
+  process.exit(1);
 });

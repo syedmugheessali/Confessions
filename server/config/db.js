@@ -10,15 +10,19 @@ try {
 
 /**
  * Connects to the MongoDB database using Mongoose.
- * Exits the process if connection fails.
+ * Reuses existing connection in serverless environments.
  */
 const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
+
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error connecting to MongoDB: ${error.message}`);
-    process.exit(1);
+    throw error;
   }
 };
 
