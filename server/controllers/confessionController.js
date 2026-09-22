@@ -52,13 +52,15 @@ exports.getConfessions = async (req, res, next) => {
     // Only find confessions that haven't expired
     const query = { expiresAt: { $gt: new Date() } };
 
-    const total = await Confession.countDocuments(query);
-
-    const confessions = await Confession.find(query)
-      .sort({ createdAt: -1 })
-      .skip(startIndex)
-      .limit(limit)
-      .select('-user'); // Exclude user to keep anonymous
+    // Run count and query in parallel over MongoDB connection
+    const [total, confessions] = await Promise.all([
+      Confession.countDocuments(query),
+      Confession.find(query)
+        .sort({ createdAt: -1 })
+        .skip(startIndex)
+        .limit(limit)
+        .select('-user'),
+    ]);
 
     res.status(200).json({
       success: true,

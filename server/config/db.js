@@ -10,24 +10,32 @@ if (process.platform === 'win32') {
   }
 }
 
+let cachedPromise = null;
+
 /**
  * Connects to the MongoDB database using Mongoose.
- * Reuses existing connection in serverless environments.
+ * Reuses existing connection and cached promise in serverless environments.
  */
 const connectDB = async () => {
-  if (mongoose.connection.readyState >= 1) {
+  if (mongoose.connection.readyState === 1) {
     return;
   }
 
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+  if (!cachedPromise) {
+    cachedPromise = mongoose.connect(process.env.MONGODB_URI, {
       serverSelectionTimeoutMS: 5000,
+      maxPoolSize: 10,
+    }).then((conn) => {
+      console.log(`MongoDB Connected: ${conn.connection.host}`);
+      return conn;
+    }).catch((err) => {
+      cachedPromise = null;
+      console.error(`Error connecting to MongoDB: ${err.message}`);
+      throw err;
     });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`Error connecting to MongoDB: ${error.message}`);
-    throw error;
   }
+
+  await cachedPromise;
 };
 
 module.exports = connectDB;
