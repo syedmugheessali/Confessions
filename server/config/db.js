@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 const dns = require('dns');
 
-// Fix for Node.js SRV DNS resolution (ECONNREFUSED) on Windows networks
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1']);
-} catch (e) {
-  // Ignore if unable to set custom DNS
+// Fix for Node.js SRV DNS resolution (ECONNREFUSED) only on local Windows networks
+if (process.platform === 'win32') {
+  try {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+  } catch (e) {
+    // Ignore if unable to set custom DNS
+  }
 }
 
 /**
@@ -18,7 +20,9 @@ const connectDB = async () => {
   }
 
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error connecting to MongoDB: ${error.message}`);
