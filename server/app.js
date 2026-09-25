@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const confessionRoutes = require('./routes/confessionRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 // Load env vars
 dotenv.config();
@@ -26,6 +27,7 @@ app.get('/api/health', (req, res) => {
 // Mount routers
 app.use('/api/auth', authRoutes);
 app.use('/api/confessions', confessionRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handler middleware (should be last piece of middleware)
 app.use(errorHandler);

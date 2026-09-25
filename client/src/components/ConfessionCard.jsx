@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useCountdown from '../hooks/useCountdown';
 
-const ConfessionCard = ({ confession, onDelete }) => {
+const ConfessionCard = ({ confession, onDelete, deleteLabel = 'Delete' }) => {
   const navigate = useNavigate();
   const { formatted, isExpired } = useCountdown(confession.expiresAt);
 
@@ -49,7 +49,7 @@ const ConfessionCard = ({ confession, onDelete }) => {
             }}
             aria-label="Delete confession"
           >
-            Delete
+            {deleteLabel}
           </button>
         )}
       </div>

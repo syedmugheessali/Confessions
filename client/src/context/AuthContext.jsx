@@ -60,8 +60,33 @@ export const AuthProvider = ({ children }) => {
     navigate('/');
   };
 
+  const role = user?.role || 'user';
+  const isAdmin = user?.role === 'admin';
+  const isModerator = user?.role === 'moderator' || isAdmin;
+  const hasRole = (allowedRoles) => {
+    if (!user) return false;
+    if (Array.isArray(allowedRoles)) {
+      return allowedRoles.includes(user.role);
+    }
+    return user.role === allowedRoles;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user,
+        role,
+        isAdmin,
+        isModerator,
+        hasRole,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

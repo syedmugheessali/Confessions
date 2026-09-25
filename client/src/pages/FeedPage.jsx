@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { getConfessions } from '../services/confessionApi';
+import { getConfessions, deleteConfession } from '../services/confessionApi';
+import { useAuth } from '../context/AuthContext';
 import ConfessionCard from '../components/ConfessionCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import EmptyState from '../components/EmptyState';
 
 const FeedPage = () => {
+  const { isModerator } = useAuth();
   const [confessions, setConfessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+
+  const handleModeratorDelete = async (id) => {
+    if (!window.confirm('Moderation action: Are you sure you want to delete this confession?')) return;
+    try {
+      await deleteConfession(id);
+      setConfessions(prev => prev.filter(c => c._id !== id));
+    } catch (err) {
+      alert('Failed to remove confession: ' + (err.response?.data?.message || err.message));
+    }
+  };
 
   const fetchConfessions = async (pageNum, isRefresh = false) => {
     try {
@@ -72,7 +84,12 @@ const FeedPage = () => {
         <>
           <div className="confessions-grid">
             {confessions.map((confession) => (
-              <ConfessionCard key={confession._id} confession={confession} />
+              <ConfessionCard 
+                key={confession._id} 
+                confession={confession} 
+                onDelete={isModerator ? handleModeratorDelete : undefined}
+                deleteLabel={isModerator ? 'Remove (Mod)' : 'Delete'}
+              />
             ))}
           </div>
           

@@ -131,16 +131,21 @@ exports.deleteConfession = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Confession not found' });
     }
 
-    // Make sure user owns confession
-    if (confession.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ success: false, message: 'You can only delete your own confessions' });
+    // Make sure user owns confession or has privileged role (admin/moderator)
+    const isOwner = confession.user.toString() === req.user._id.toString();
+    const isStaff = req.user.role === 'admin' || req.user.role === 'moderator';
+
+    if (!isOwner && !isStaff) {
+      return res.status(403).json({ success: false, message: 'You are not authorized to delete this confession' });
     }
 
     await confession.deleteOne();
 
     res.status(200).json({
       success: true,
-      message: 'Confession deleted successfully',
+      message: isStaff && !isOwner 
+        ? 'Confession removed by moderator/admin' 
+        : 'Confession deleted successfully',
     });
   } catch (error) {
     next(error);

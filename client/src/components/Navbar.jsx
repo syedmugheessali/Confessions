@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, isModerator, role } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -28,7 +28,19 @@ const Navbar = () => {
             <>
               <NavLink to="/confessions/create" onClick={closeMenu}>Write</NavLink>
               <NavLink to="/confessions/my" onClick={closeMenu}>My Confessions</NavLink>
-              <NavLink to="/profile" onClick={closeMenu}>Profile</NavLink>
+              {isModerator && (
+                <NavLink to="/admin" onClick={closeMenu} className="nav-admin-link">
+                  Admin Panel
+                </NavLink>
+              )}
+              <NavLink to="/profile" onClick={closeMenu} className="nav-profile-link">
+                Profile
+                {role !== 'user' && (
+                  <span className={`badge-role badge-${role} nav-role-pill`}>
+                    {role === 'admin' ? 'Admin' : 'Mod'}
+                  </span>
+                )}
+              </NavLink>
               <button className="btn-logout" onClick={() => { logout(); closeMenu(); }}>Sign out</button>
             </>
           ) : (

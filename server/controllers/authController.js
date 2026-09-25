@@ -44,6 +44,7 @@ exports.register = async (req, res, next) => {
           id: user._id,
           name: user.name,
           email: user.email,
+          role: user.role,
           createdAt: user.createdAt,
         },
         token,
@@ -87,6 +88,7 @@ exports.login = async (req, res, next) => {
           id: user._id,
           name: user.name,
           email: user.email,
+          role: user.role,
           createdAt: user.createdAt,
         },
         token,
@@ -109,6 +111,7 @@ exports.getMe = async (req, res, next) => {
           id: req.user._id,
           name: req.user.name,
           email: req.user.email,
+          role: req.user.role,
           createdAt: req.user.createdAt,
         }
       },

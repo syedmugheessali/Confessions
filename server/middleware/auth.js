@@ -48,4 +48,33 @@ const auth = async (req, res, next) => {
   }
 };
 
+/**
+ * Middleware to restrict route access by user role(s).
+ * Must be used AFTER auth middleware.
+ * @param {...string} roles - Allowed roles (e.g. 'admin', 'moderator')
+ */
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Access denied. User authentication required.',
+      });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Forbidden: Role '${req.user.role}' is not authorized to access this resource`,
+      });
+    }
+
+    next();
+  };
+};
+
+auth.auth = auth;
+auth.authorize = authorize;
+
 module.exports = auth;
+

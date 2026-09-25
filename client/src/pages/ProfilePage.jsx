@@ -25,6 +25,14 @@ const ProfilePage = () => {
         
         <div className="profile-details">
           <div className="detail-item">
+            <span className="detail-label">Account Role</span>
+            <span className="detail-value">
+              <span className={`badge-role badge-${user.role || 'user'}`}>
+                {(user.role || 'user').toUpperCase()}
+              </span>
+            </span>
+          </div>
+          <div className="detail-item">
             <span className="detail-label">Member Since</span>
             <span className="detail-value">{memberSince}</span>
           </div>
