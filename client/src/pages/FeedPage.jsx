@@ -67,7 +67,10 @@ const FeedPage = () => {
   return (
     <div className="page-container feed-page">
       <div className="feed-header">
-        <h2>Latest Confessions</h2>
+        <div>
+          <h2>Latest Confessions</h2>
+          <p className="subtitle-text">Share your secret without getting known.</p>
+        </div>
         <button className="btn-secondary" onClick={handleRefresh}>
           Refresh
         </button>
