@@ -38,20 +38,52 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Hash the password before saving if it has been modified
+// Hash the password before saving if it has been modified (with lifecycle logging)
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
 
+
+  console.log('\n--- [AUTH LIFECYCLE: PRE-SAVE] ---');
+  console.log(`User: ${this.email} (${this.name})`);
+  console.log(`Plaintext password received: "${this.password}"`);
+
+
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  const hash = await bcrypt.hash(this.password, salt);
+
+
+  console.log(`Generated Salt (10 rounds):   ${salt}`);
+  console.log(`Generated bcrypt Hash:        ${hash}`);
+  console.log('----------------------------------\n');
+
+
+  this.password = hash;
   next();
+});
+
+// Post-save hook to observe when the document is written to MongoDB
+userSchema.post('save', function (doc) {
+
+  console.log(`[AUTH LIFECYCLE: POST-SAVE] User "${doc.email}" saved to MongoDB.`);
+
 });
 
 // Compare entered password with hashed password in database
 userSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  const isMatch = await bcrypt.compare(enteredPassword, this.password);
+
+
+  console.log('\n--- [AUTH LIFECYCLE: LOGIN VERIFICATION] ---');
+  console.log(`User: ${this.email}`);
+  console.log(`Entered plaintext password: "${enteredPassword}"`);
+  console.log(`Stored database hash:       ${this.password}`);
+  console.log(`Verification result:        ${isMatch ? 'SUCCESS (MATCH)' : 'FAILED (MISMATCH)'}`);
+  console.log('--------------------------------------------\n');
+
+
+  return isMatch;
 };
 
 module.exports = mongoose.model('User', userSchema);
