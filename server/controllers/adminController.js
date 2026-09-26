@@ -6,22 +6,18 @@ const Confession = require('../models/Confession');
 // @access  Private (Admin & Moderator)
 exports.getStats = async (req, res, next) => {
   try {
-    const now = new Date();
-
     const [
       totalUsers,
       adminCount,
       moderatorCount,
       userCount,
-      activeConfessions,
-      expiredConfessions,
+      totalConfessions,
     ] = await Promise.all([
       User.countDocuments(),
       User.countDocuments({ role: 'admin' }),
       User.countDocuments({ role: 'moderator' }),
       User.countDocuments({ role: 'user' }),
-      Confession.countDocuments({ expiresAt: { $gt: now } }),
-      Confession.countDocuments({ expiresAt: { $lte: now } }),
+      Confession.countDocuments(),
     ]);
 
     res.status(200).json({
@@ -34,9 +30,7 @@ exports.getStats = async (req, res, next) => {
           user: userCount,
         },
         confessions: {
-          active: activeConfessions,
-          expired: expiredConfessions,
-          total: activeConfessions + expiredConfessions,
+          total: totalConfessions,
         },
       },
     });
@@ -152,14 +146,8 @@ exports.getAdminConfessions = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 20;
-    const status = req.query.status; // 'active', 'expired', or undefined for all
 
     const query = {};
-    if (status === 'active') {
-      query.expiresAt = { $gt: new Date() };
-    } else if (status === 'expired') {
-      query.expiresAt = { $lte: new Date() };
-    }
 
     const total = await Confession.countDocuments(query);
     const confessions = await Confession.find(query)

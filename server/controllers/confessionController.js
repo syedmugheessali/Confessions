@@ -1,27 +1,19 @@
 const Confession = require('../models/Confession');
-const { VALID_DURATIONS } = require('../utils/constants');
 
 // @desc    Create a confession
 // @route   POST /api/confessions
 // @access  Private
 exports.createConfession = async (req, res, next) => {
   try {
-    const { content, duration } = req.body;
+    const { content } = req.body;
 
     if (!content || content.length > 1000) {
       return res.status(400).json({ success: false, message: 'Content is required and must be less than 1000 characters' });
     }
 
-    if (!duration || !VALID_DURATIONS[duration]) {
-      return res.status(400).json({ success: false, message: 'Invalid duration' });
-    }
-
-    const expiresAt = new Date(Date.now() + VALID_DURATIONS[duration]);
-
     const confession = await Confession.create({
       content,
       user: req.user._id,
-      expiresAt,
     });
 
     res.status(201).json({
@@ -29,10 +21,7 @@ exports.createConfession = async (req, res, next) => {
       data: {
         id: confession._id,
         content: confession.content,
-        expiresAt: confession.expiresAt,
         createdAt: confession.createdAt,
-        isExpired: confession.isExpired,
-        remainingTime: confession.remainingTime
       },
     });
   } catch (error) {
@@ -40,7 +29,7 @@ exports.createConfession = async (req, res, next) => {
   }
 };
 
-// @desc    Get all active confessions
+// @desc    Get all confessions
 // @route   GET /api/confessions
 // @access  Public
 exports.getConfessions = async (req, res, next) => {
@@ -49,13 +38,10 @@ exports.getConfessions = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 20;
     const startIndex = (page - 1) * limit;
 
-    // Only find confessions that haven't expired
-    const query = { expiresAt: { $gt: new Date() } };
-
     // Run count and query in parallel over MongoDB connection
     const [total, confessions] = await Promise.all([
-      Confession.countDocuments(query),
-      Confession.find(query)
+      Confession.countDocuments(),
+      Confession.find()
         .sort({ createdAt: -1 })
         .skip(startIndex)
         .limit(limit)
@@ -84,13 +70,10 @@ exports.getConfessions = async (req, res, next) => {
 // @access  Public
 exports.getConfession = async (req, res, next) => {
   try {
-    const confession = await Confession.findOne({
-      _id: req.params.id,
-      expiresAt: { $gt: new Date() },
-    }).select('-user');
+    const confession = await Confession.findById(req.params.id).select('-user');
 
     if (!confession) {
-      return res.status(404).json({ success: false, message: 'Confession not found or has expired' });
+      return res.status(404).json({ success: false, message: 'Confession not found' });
     }
 
     res.status(200).json({
@@ -107,7 +90,6 @@ exports.getConfession = async (req, res, next) => {
 // @access  Private
 exports.getMyConfessions = async (req, res, next) => {
   try {
-    // Include expired ones that haven't been cleaned up by TTL yet
     const confessions = await Confession.find({ user: req.user._id })
       .sort({ createdAt: -1 });
 

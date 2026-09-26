@@ -23,9 +23,8 @@ export const updateUserRole = async (userId, role) => {
 };
 
 // Get all confessions for moderation (Admin & Moderator)
-export const getAdminConfessions = async (page = 1, limit = 20, status = '') => {
+export const getAdminConfessions = async (page = 1, limit = 20) => {
   const params = new URLSearchParams({ page, limit });
-  if (status) params.append('status', status);
 
   const response = await api.get(`/admin/confessions?${params.toString()}`);
   return response.data.data;

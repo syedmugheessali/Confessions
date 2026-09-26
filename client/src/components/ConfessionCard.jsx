@@ -1,10 +1,8 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import useCountdown from '../hooks/useCountdown';
+import { useNavigate } from 'react-router-dom';
 
 const ConfessionCard = ({ confession, onDelete, deleteLabel = 'Delete' }) => {
   const navigate = useNavigate();
-  const { formatted, isExpired } = useCountdown(confession.expiresAt);
 
   const handleClick = (e) => {
     // Prevent navigation if clicking on the delete button
@@ -28,7 +26,7 @@ const ConfessionCard = ({ confession, onDelete, deleteLabel = 'Delete' }) => {
   };
 
   return (
-    <div className={`confession-card ${isExpired ? 'expired' : ''}`} onClick={handleClick}>
+    <div className="confession-card" onClick={handleClick}>
       <div className="card-header">
         <span className="author">Anonymous</span>
         <span className="time-ago">{timeAgo(confession.createdAt)}</span>
@@ -37,9 +35,6 @@ const ConfessionCard = ({ confession, onDelete, deleteLabel = 'Delete' }) => {
         <p className="content">{confession.content}</p>
       </div>
       <div className="card-footer">
-        <div className={`countdown ${isExpired ? 'text-danger' : ''}`}>
-          {isExpired ? 'Expired' : `Expires in ${formatted}`}
-        </div>
         {onDelete && (
           <button 
             className="delete-btn" 

@@ -32,7 +32,6 @@ const AdminDashboardPage = () => {
   const [confessions, setConfessions] = useState([]);
   const [confessionsLoading, setConfessionsLoading] = useState(false);
   const [confessionsError, setConfessionsError] = useState(null);
-  const [statusFilter, setStatusFilter] = useState('');
 
   // Load stats
   const fetchStats = async () => {
@@ -67,7 +66,7 @@ const AdminDashboardPage = () => {
   const fetchConfessions = async () => {
     setConfessionsLoading(true);
     try {
-      const data = await getAdminConfessions(1, 50, statusFilter);
+      const data = await getAdminConfessions(1, 50);
       setConfessions(data.confessions || []);
       setConfessionsError(null);
     } catch (err) {
@@ -87,7 +86,7 @@ const AdminDashboardPage = () => {
     } else if (activeTab === 'moderation') {
       fetchConfessions();
     }
-  }, [activeTab, statusFilter, roleFilter]);
+  }, [activeTab, roleFilter]);
 
   const handleRoleChange = async (targetUserId, newRole) => {
     setUpdatingUserId(targetUserId);
@@ -198,14 +197,9 @@ const AdminDashboardPage = () => {
                 <span className="stat-sub">Standard privileges</span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Active Confessions</span>
-                <span className="stat-value text-success">{stats.confessions?.active || 0}</span>
-                <span className="stat-sub">Live on feed</span>
-              </div>
-              <div className="stat-card">
-                <span className="stat-label">Expired Confessions</span>
-                <span className="stat-value text-muted">{stats.confessions?.expired || 0}</span>
-                <span className="stat-sub">Awaiting TTL cleanup</span>
+                <span className="stat-label">Total Confessions</span>
+                <span className="stat-value">{stats.confessions?.total || 0}</span>
+                <span className="stat-sub">All time</span>
               </div>
             </div>
           )}
@@ -215,26 +209,13 @@ const AdminDashboardPage = () => {
       {/* Moderation Tab */}
       {activeTab === 'moderation' && (
         <div className="tab-content">
-          <div className="filter-bar">
-            <label>Filter by status:</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="select-input"
-            >
-              <option value="">All Confessions</option>
-              <option value="active">Active Only</option>
-              <option value="expired">Expired Only</option>
-            </select>
-          </div>
-
           {confessionsLoading && <LoadingSpinner />}
           {confessionsError && (
             <ErrorMessage message={confessionsError} onRetry={fetchConfessions} />
           )}
 
           {!confessionsLoading && confessions.length === 0 && (
-            <div className="empty-state">No confessions found matching filter.</div>
+            <div className="empty-state">No confessions found.</div>
           )}
 
           {!confessionsLoading && confessions.length > 0 && (
@@ -244,14 +225,12 @@ const AdminDashboardPage = () => {
                   <tr>
                     <th>Content</th>
                     <th>Author</th>
-                    <th>Status</th>
                     <th>Created</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {confessions.map((c) => {
-                    const isExp = new Date(c.expiresAt) <= new Date();
                     return (
                       <tr key={c._id}>
                         <td className="table-content-cell">{c.content}</td>
@@ -267,11 +246,6 @@ const AdminDashboardPage = () => {
                           ) : (
                             <span className="text-muted">Unknown / Deleted</span>
                           )}
-                        </td>
-                        <td>
-                          <span className={`status-pill ${isExp ? 'status-expired' : 'status-active'}`}>
-                            {isExp ? 'Expired' : 'Active'}
-                          </span>
                         </td>
                         <td className="text-xs">
                           {new Date(c.createdAt).toLocaleDateString()}

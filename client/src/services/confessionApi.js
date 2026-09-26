@@ -1,6 +1,6 @@
 import api from './api';
 
-// Get all active confessions (paginated)
+// Get all confessions (paginated)
 export const getConfessions = async (page = 1, limit = 20) => {
   const response = await api.get(`/confessions?page=${page}&limit=${limit}`);
   // response.data = { success, data: { confessions, pagination } }
@@ -15,8 +15,8 @@ export const getConfession = async (id) => {
 };
 
 // Create a new confession
-export const createConfession = async (content, duration) => {
-  const response = await api.post('/confessions', { content, duration });
+export const createConfession = async (content) => {
+  const response = await api.post('/confessions', { content });
   return response.data.data;
 };
 

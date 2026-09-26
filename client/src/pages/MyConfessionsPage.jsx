@@ -28,7 +28,7 @@ const MyConfessionsPage = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this confession early?')) return;
+    if (!window.confirm('Are you sure you want to delete this confession?')) return;
     
     try {
       await deleteConfession(id);
@@ -44,7 +44,7 @@ const MyConfessionsPage = () => {
   return (
     <div className="page-container">
       <h2>My Confessions</h2>
-      <p className="subtitle-text mb-4">View and manage your active confessions.</p>
+      <p className="subtitle-text mb-4">View and manage your confessions.</p>
       
       {confessions.length === 0 ? (
         <EmptyState 
