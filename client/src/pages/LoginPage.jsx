@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
@@ -7,8 +7,13 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, isAuthenticated, loading: authLoading, sessionExpiredMsg } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect authenticated users away from login page
+  if (!authLoading && isAuthenticated) {
+    return <Navigate to="/confessions" replace />;
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,6 +38,7 @@ const LoginPage = () => {
     <div className="auth-page">
       <div className="auth-card">
         <h2>Sign In</h2>
+        {sessionExpiredMsg && <div className="form-info">{sessionExpiredMsg}</div>}
         {error && <div className="form-error">{error}</div>}
         
         <form onSubmit={handleSubmit}>

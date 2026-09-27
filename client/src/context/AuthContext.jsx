@@ -1,6 +1,8 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { getMe, login as loginApi, register as registerApi } from '../services/authApi';
 import { useNavigate } from 'react-router-dom';
+import useInactivityTimer from '../hooks/useInactivityTimer';
+import { AUTH_SYNC_EVENT } from '../constants/auth';
 
 const AuthContext = createContext();
 
@@ -8,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [sessionExpiredMsg, setSessionExpiredMsg] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +22,7 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
           console.error("Failed to fetch user", error);
           localStorage.removeItem('token');
+          localStorage.removeItem('lastActivityTimestamp');
           setToken(null);
           setUser(null);
         }
@@ -29,12 +33,37 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, [token]);
 
+  // Listen for forced auth sync events (fired by API interceptor on 401)
+  useEffect(() => {
+    const handleForceSync = () => {
+      const currentToken = localStorage.getItem('token');
+      if (!currentToken && token) {
+        setToken(null);
+        setUser(null);
+        setSessionExpiredMsg('Your session has expired. Please sign in again.');
+        navigate('/login');
+      }
+    };
+
+    window.addEventListener(AUTH_SYNC_EVENT, handleForceSync);
+    return () => window.removeEventListener(AUTH_SYNC_EVENT, handleForceSync);
+  }, [token, navigate]);
+
+  // Auto-dismiss session expired message after 5 seconds
+  useEffect(() => {
+    if (sessionExpiredMsg) {
+      const timer = setTimeout(() => setSessionExpiredMsg(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [sessionExpiredMsg]);
+
   const login = async (email, password) => {
     try {
       const data = await loginApi(email, password);
       localStorage.setItem('token', data.token);
       setToken(data.token);
       setUser(data.user);
+      setSessionExpiredMsg('');
       return data;
     } catch (error) {
       throw error;
@@ -47,18 +76,30 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', data.token);
       setToken(data.token);
       setUser(data.user);
+      setSessionExpiredMsg('');
       return data;
     } catch (error) {
       throw error;
     }
   };
 
-  const logout = () => {
+  const logout = useCallback((reason) => {
     localStorage.removeItem('token');
+    localStorage.removeItem('lastActivityTimestamp');
     setToken(null);
     setUser(null);
+    if (reason === 'inactivity') {
+      setSessionExpiredMsg('You were signed out due to inactivity.');
+    }
     navigate('/');
-  };
+  }, [navigate]);
+
+  // Inactivity auto-logout — only active when user is authenticated
+  const handleInactivityTimeout = useCallback(() => {
+    logout('inactivity');
+  }, [logout]);
+
+  useInactivityTimer(handleInactivityTimeout, !!user);
 
   const role = user?.role || 'user';
   const isAdmin = user?.role === 'admin';
@@ -85,6 +126,7 @@ export const AuthProvider = ({ children }) => {
         isAdmin,
         isModerator,
         hasRole,
+        sessionExpiredMsg,
       }}
     >
       {children}

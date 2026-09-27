@@ -55,11 +55,12 @@ const MyConfessionsPage = () => {
         />
       ) : (
         <div className="confessions-grid">
-          {confessions.map((confession) => (
+          {confessions.map((confession, idx) => (
             <ConfessionCard 
               key={confession._id} 
               confession={confession} 
               onDelete={handleDelete}
+              index={idx}
             />
           ))}
         </div>

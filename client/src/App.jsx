@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import SessionToast from './components/SessionToast';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -17,6 +18,7 @@ function App() {
   return (
     <div className="app-container">
       <Navbar />
+      <SessionToast />
       <main className="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />

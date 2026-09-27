@@ -86,12 +86,13 @@ const FeedPage = () => {
       ) : (
         <>
           <div className="confessions-grid">
-            {confessions.map((confession) => (
+            {confessions.map((confession, idx) => (
               <ConfessionCard 
                 key={confession._id} 
                 confession={confession} 
                 onDelete={isModerator ? handleModeratorDelete : undefined}
                 deleteLabel={isModerator ? 'Remove (Mod)' : 'Delete'}
+                index={idx}
               />
             ))}
           </div>

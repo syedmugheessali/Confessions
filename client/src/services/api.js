@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { AUTH_SYNC_EVENT } from '../constants/auth';
 
 const api = axios.create({
   baseURL: '/api'
@@ -21,7 +22,9 @@ api.interceptors.response.use((response) => {
 }, (error) => {
   if (error.response && error.response.status === 401) {
     localStorage.removeItem('token');
-    // We let the AuthContext or ProtectedRoute handle the redirect or state reset
+    localStorage.removeItem('lastActivityTimestamp');
+    // Dispatch custom event so AuthContext can sync its state
+    window.dispatchEvent(new Event(AUTH_SYNC_EVENT));
   }
   return Promise.reject(error);
 });
