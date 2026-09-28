@@ -751,6 +751,33 @@ textarea::placeholder {
   min-height: 140px;
 }
 
+.random-prompt-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.65rem;
+}
+
+.btn-random-prompt {
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-dark);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-random-prompt:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
 .char-count {
   position: absolute;
   bottom: 0.65rem;
