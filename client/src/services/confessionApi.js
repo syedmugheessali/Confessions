@@ -27,6 +27,18 @@ export const getMyConfessions = async () => {
   return response.data.data;
 };
 
+// Like a confession (toggle)
+export const likeConfession = async (id) => {
+  const response = await api.put(`/confessions/${id}/like`);
+  return response.data.data;
+};
+
+// Dislike a confession (toggle)
+export const dislikeConfession = async (id) => {
+  const response = await api.put(`/confessions/${id}/dislike`);
+  return response.data.data;
+};
+
 // Delete a confession by ID
 export const deleteConfession = async (id) => {
   const response = await api.delete(`/confessions/${id}`);

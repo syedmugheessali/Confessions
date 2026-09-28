@@ -22,6 +22,10 @@ exports.createConfession = async (req, res, next) => {
         id: confession._id,
         content: confession.content,
         createdAt: confession.createdAt,
+        likes: [],
+        dislikes: [],
+        likesCount: 0,
+        dislikesCount: 0,
       },
     });
   } catch (error) {
@@ -48,10 +52,20 @@ exports.getConfessions = async (req, res, next) => {
         .select('-user'),
     ]);
 
+    // Map confessions to include counts
+    const confessionsWithCounts = confessions.map((c) => ({
+      _id: c._id,
+      content: c.content,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+      likesCount: c.likes ? c.likes.length : 0,
+      dislikesCount: c.dislikes ? c.dislikes.length : 0,
+    }));
+
     res.status(200).json({
       success: true,
       data: {
-        confessions,
+        confessions: confessionsWithCounts,
         pagination: {
           page,
           limit,
@@ -78,7 +92,11 @@ exports.getConfession = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: confession,
+      data: {
+        ...confession.toObject(),
+        likesCount: confession.likes ? confession.likes.length : 0,
+        dislikesCount: confession.dislikes ? confession.dislikes.length : 0,
+      },
     });
   } catch (error) {
     next(error);
@@ -93,9 +111,102 @@ exports.getMyConfessions = async (req, res, next) => {
     const confessions = await Confession.find({ user: req.user._id })
       .sort({ createdAt: -1 });
 
+    const confessionsWithCounts = confessions.map((c) => ({
+      _id: c._id,
+      content: c.content,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+      likesCount: c.likes ? c.likes.length : 0,
+      dislikesCount: c.dislikes ? c.dislikes.length : 0,
+    }));
+
     res.status(200).json({
       success: true,
-      data: confessions,
+      data: confessionsWithCounts,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Like a confession
+// @route   PUT /api/confessions/:id/like
+// @access  Private
+exports.likeConfession = async (req, res, next) => {
+  try {
+    const confession = await Confession.findById(req.params.id);
+
+    if (!confession) {
+      return res.status(404).json({ success: false, message: 'Confession not found' });
+    }
+
+    const userId = req.user._id.toString();
+    const alreadyLiked = confession.likes.some((id) => id.toString() === userId);
+    const alreadyDisliked = confession.dislikes.some((id) => id.toString() === userId);
+
+    if (alreadyLiked) {
+      // Toggle off — remove like
+      confession.likes = confession.likes.filter((id) => id.toString() !== userId);
+    } else {
+      // Add like and remove dislike if present
+      confession.likes.push(req.user._id);
+      if (alreadyDisliked) {
+        confession.dislikes = confession.dislikes.filter((id) => id.toString() !== userId);
+      }
+    }
+
+    await confession.save();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        likesCount: confession.likes.length,
+        dislikesCount: confession.dislikes.length,
+        userLiked: !alreadyLiked,
+        userDisliked: false,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Dislike a confession
+// @route   PUT /api/confessions/:id/dislike
+// @access  Private
+exports.dislikeConfession = async (req, res, next) => {
+  try {
+    const confession = await Confession.findById(req.params.id);
+
+    if (!confession) {
+      return res.status(404).json({ success: false, message: 'Confession not found' });
+    }
+
+    const userId = req.user._id.toString();
+    const alreadyDisliked = confession.dislikes.some((id) => id.toString() === userId);
+    const alreadyLiked = confession.likes.some((id) => id.toString() === userId);
+
+    if (alreadyDisliked) {
+      // Toggle off — remove dislike
+      confession.dislikes = confession.dislikes.filter((id) => id.toString() !== userId);
+    } else {
+      // Add dislike and remove like if present
+      confession.dislikes.push(req.user._id);
+      if (alreadyLiked) {
+        confession.likes = confession.likes.filter((id) => id.toString() !== userId);
+      }
+    }
+
+    await confession.save();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        likesCount: confession.likes.length,
+        dislikesCount: confession.dislikes.length,
+        userLiked: false,
+        userDisliked: !alreadyDisliked,
+      },
     });
   } catch (error) {
     next(error);

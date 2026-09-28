@@ -42,9 +42,11 @@ const MyConfessionsPage = () => {
   if (error) return <ErrorMessage message={error} onRetry={fetchMyConfessions} />;
 
   return (
-    <div className="page-container">
-      <h2>My Confessions</h2>
-      <p className="subtitle-text mb-4">View and manage your confessions.</p>
+    <div className="home-feed-layout my-confessions-page">
+      <div className="feed-title-area">
+        <h1 className="feed-main-title">My Confessions</h1>
+        <p className="feed-tagline">manage your anonymous posts</p>
+      </div>
       
       {confessions.length === 0 ? (
         <EmptyState 
@@ -54,7 +56,7 @@ const MyConfessionsPage = () => {
           actionLink="/confessions/create"
         />
       ) : (
-        <div className="confessions-grid">
+        <div className="confessions-feed">
           {confessions.map((confession, idx) => (
             <ConfessionCard 
               key={confession._id} 

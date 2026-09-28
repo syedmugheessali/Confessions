@@ -5,6 +5,8 @@ const {
   getConfession,
   getMyConfessions,
   deleteConfession,
+  likeConfession,
+  dislikeConfession,
 } = require('../controllers/confessionController');
 const auth = require('../middleware/auth');
 
@@ -14,6 +16,8 @@ router.get('/my', auth, getMyConfessions);
 router.get('/', getConfessions);
 router.get('/:id', getConfession);
 router.post('/', auth, createConfession);
+router.put('/:id/like', auth, likeConfession);
+router.put('/:id/dislike', auth, dislikeConfession);
 router.delete('/:id', auth, deleteConfession);
 
 module.exports = router;

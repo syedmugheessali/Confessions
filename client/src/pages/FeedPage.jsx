@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { getConfessions, deleteConfession } from '../services/confessionApi';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import ConfessionCard from '../components/ConfessionCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import EmptyState from '../components/EmptyState';
 
 const FeedPage = () => {
-  const { isModerator } = useAuth();
+  const { isAuthenticated, isModerator } = useAuth();
+  const navigate = useNavigate();
   const [confessions, setConfessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,15 +67,10 @@ const FeedPage = () => {
   if (error && page === 1) return <ErrorMessage message={error} onRetry={handleRefresh} />;
 
   return (
-    <div className="page-container feed-page">
-      <div className="feed-header">
-        <div>
-          <h2>Latest Confessions</h2>
-          <p className="subtitle-text">Share your secret without getting known.</p>
-        </div>
-        <button className="btn-secondary" onClick={handleRefresh}>
-          Refresh
-        </button>
+    <div className="home-feed-layout">
+      <div className="feed-title-area">
+        <h1 className="feed-main-title">All Confessions</h1>
+        <p className="feed-tagline">the latest anonymous thoughts</p>
       </div>
 
       {confessions.length === 0 ? (
@@ -85,7 +82,7 @@ const FeedPage = () => {
         />
       ) : (
         <>
-          <div className="confessions-grid">
+          <div className="confessions-feed">
             {confessions.map((confession, idx) => (
               <ConfessionCard 
                 key={confession._id} 
@@ -99,12 +96,27 @@ const FeedPage = () => {
           
           {hasMore && (
             <div className="load-more-container">
-              <button className="btn-secondary" onClick={handleLoadMore} disabled={loading}>
-                {loading ? 'Loading...' : 'Load More'}
+              <button className="btn-load-more" onClick={handleLoadMore} disabled={loading}>
+                {loading ? 'Loading...' : 'Load more'}
               </button>
             </div>
           )}
         </>
+      )}
+
+      {/* Floating Action Button */}
+      {isAuthenticated && (
+        <button
+          className="fab-create"
+          onClick={() => navigate('/confessions/create')}
+          aria-label="Create confession"
+          title="Write a confession"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
       )}
     </div>
   );

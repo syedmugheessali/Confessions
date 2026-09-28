@@ -1,29 +1,123 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { getConfessions, deleteConfession } from '../services/confessionApi';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import ConfessionCard from '../components/ConfessionCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 
 const HomePage = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isModerator } = useAuth();
+  const navigate = useNavigate();
+  const [confessions, setConfessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const handleModeratorDelete = async (id) => {
+    if (!window.confirm('Moderation action: Are you sure you want to delete this confession?')) return;
+    try {
+      await deleteConfession(id);
+      setConfessions(prev => prev.filter(c => c._id !== id));
+    } catch (err) {
+      alert('Failed to remove confession: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const fetchConfessions = async (pageNum, isRefresh = false) => {
+    try {
+      if (isRefresh) setLoading(true);
+      setError(null);
+      const data = await getConfessions(pageNum, 20);
+      const items = data.confessions || [];
+      
+      if (isRefresh) {
+        setConfessions(items);
+      } else {
+        setConfessions(prev => [...prev, ...items]);
+      }
+      
+      setHasMore(data.pagination ? pageNum < data.pagination.pages : items.length >= 20);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load confessions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchConfessions(page, true);
+  }, []);
+
+  const handleRefresh = () => {
+    setPage(1);
+    setHasMore(true);
+    fetchConfessions(1, true);
+  };
+
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchConfessions(nextPage);
+  };
 
   return (
-    <div className="home-page">
-      <section className="hero-section">
-        <h1 className="hero-title">Confessions</h1>
-        <p className="hero-subtitle">
-          Post confessions anonymously that you're too afraid to admit publicly.
-        </p>
-        <p className="hero-desc">
-          Share your secret without getting known. Every post is completely anonymous and automatically disappears when the timer expires.
-        </p>
-        <div className="hero-actions">
-          <Link to="/confessions" className="btn-primary">Browse confessions</Link>
-          {isAuthenticated ? (
-            <Link to="/confessions/create" className="btn-secondary">Write confession</Link>
-          ) : (
-            <Link to="/login" className="btn-secondary">Sign in to write</Link>
-          )}
+    <div className="home-feed-layout">
+      {/* Header area */}
+      <div className="feed-title-area">
+        <h1 className="feed-main-title">Confessions</h1>
+        <p className="feed-tagline">speak your truth, stay anonymous</p>
+      </div>
+
+      {loading && page === 1 ? (
+        <LoadingSpinner />
+      ) : error && page === 1 ? (
+        <ErrorMessage message={error} onRetry={handleRefresh} />
+      ) : confessions.length === 0 ? (
+        <div className="empty-feed">
+          <div className="empty-feed-icon">🤫</div>
+          <p className="empty-feed-title">No confessions yet</p>
+          <p className="empty-feed-sub">Be the first to share something.</p>
         </div>
-      </section>
+      ) : (
+        <>
+          <div className="confessions-feed">
+            {confessions.map((confession, idx) => (
+              <ConfessionCard
+                key={confession._id}
+                confession={confession}
+                onDelete={isModerator ? handleModeratorDelete : undefined}
+                deleteLabel={isModerator ? 'Remove (Mod)' : 'Delete'}
+                index={idx}
+              />
+            ))}
+          </div>
+
+          {hasMore && (
+            <div className="load-more-container">
+              <button className="btn-load-more" onClick={handleLoadMore} disabled={loading}>
+                {loading ? 'Loading...' : 'Load more'}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Floating Action Button */}
+      {isAuthenticated && (
+        <button
+          className="fab-create"
+          onClick={() => navigate('/confessions/create')}
+          aria-label="Create confession"
+          title="Write a confession"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      )}
     </div>
   );
 };

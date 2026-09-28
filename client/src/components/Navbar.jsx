@@ -21,16 +21,13 @@ const Navbar = () => {
         </button>
 
         <div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
-          <NavLink to="/" onClick={closeMenu}>Home</NavLink>
-          <NavLink to="/confessions" end onClick={closeMenu}>Confessions</NavLink>
-          
           {isAuthenticated ? (
             <>
-              <NavLink to="/confessions/create" onClick={closeMenu}>Write</NavLink>
-              <NavLink to="/confessions/my" onClick={closeMenu}>My Confessions</NavLink>
+              <NavLink to="/" end onClick={closeMenu}>Feed</NavLink>
+              <NavLink to="/confessions/my" onClick={closeMenu}>My Posts</NavLink>
               {isModerator && (
                 <NavLink to="/admin" onClick={closeMenu} className="nav-admin-link">
-                  Admin Panel
+                  Admin
                 </NavLink>
               )}
               <NavLink to="/profile" onClick={closeMenu} className="nav-profile-link">
