@@ -13,8 +13,6 @@ const FeedPage = () => {
   const [confessions, setConfessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
 
   const handleModeratorDelete = async (id) => {
     if (!window.confirm('Moderation action: Are you sure you want to delete this confession?')) return;
@@ -26,20 +24,13 @@ const FeedPage = () => {
     }
   };
 
-  const fetchConfessions = async (pageNum, isRefresh = false) => {
+  const fetchConfessions = async () => {
     try {
-      if (isRefresh) setLoading(true);
+      setLoading(true);
       setError(null);
-      const data = await getConfessions(pageNum, 20);
+      const data = await getConfessions(1, 100);
       const items = data.confessions || [];
-
-      if (isRefresh) {
-        setConfessions(items);
-      } else {
-        setConfessions(prev => [...prev, ...items]);
-      }
-
-      setHasMore(data.pagination ? pageNum < data.pagination.pages : items.length >= 20);
+      setConfessions(items);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load confessions');
     } finally {
@@ -48,23 +39,15 @@ const FeedPage = () => {
   };
 
   useEffect(() => {
-    fetchConfessions(page, true);
+    fetchConfessions();
   }, []);
 
   const handleRefresh = () => {
-    setPage(1);
-    setHasMore(true);
-    fetchConfessions(1, true);
+    fetchConfessions();
   };
 
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchConfessions(nextPage);
-  };
-
-  if (loading && page === 1) return <LoadingSpinner />;
-  if (error && page === 1) return <ErrorMessage message={error} onRetry={handleRefresh} />;
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage message={error} onRetry={handleRefresh} />;
 
   return (
     <div className="home-feed-layout">
@@ -81,27 +64,17 @@ const FeedPage = () => {
           actionLink="/confessions/create"
         />
       ) : (
-        <>
-          <div className="confessions-feed">
-            {confessions.map((confession, idx) => (
-              <ConfessionCard
-                key={confession._id}
-                confession={confession}
-                onDelete={isModerator ? handleModeratorDelete : undefined}
-                deleteLabel={isModerator ? 'Remove (Mod)' : 'Delete'}
-                index={idx}
-              />
-            ))}
-          </div>
-
-          {hasMore && (
-            <div className="load-more-container">
-              <button className="btn-load-more" onClick={handleLoadMore} disabled={loading}>
-                {loading ? 'Loading...' : 'Load more'}
-              </button>
-            </div>
-          )}
-        </>
+        <div className="confessions-feed">
+          {confessions.map((confession, idx) => (
+            <ConfessionCard
+              key={confession._id}
+              confession={confession}
+              onDelete={isModerator ? handleModeratorDelete : undefined}
+              deleteLabel={isModerator ? 'Remove (Mod)' : 'Delete'}
+              index={idx}
+            />
+          ))}
+        </div>
       )}
 
       {/* Floating Action Button */}

@@ -289,27 +289,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.btn-load-more {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.55rem 1.5rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-family: var(--font-main);
-  cursor: pointer;
-  font-size: 0.85rem;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--text-secondary);
-  transition: all 0.15s ease;
-}
-
-.btn-load-more:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: var(--shadow-sm);
-}
 
 /* ==========================================
    Forms
@@ -668,15 +647,7 @@ textarea::placeholder {
   }
 }
 
-/* ==========================================
-   Load More
-   ========================================== */
-.load-more-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 1.5rem;
-  padding-bottom: 2rem;
-}
+
 
 /* ==========================================
    Detail Page
