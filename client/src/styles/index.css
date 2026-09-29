@@ -12,9 +12,9 @@
   --text-primary: #1a1a2e;
   --text-secondary: #555770;
   --text-muted: #8e8ea0;
-  --accent: #4361ee;
-  --accent-hover: #3a56d4;
-  --accent-light: #eef0ff;
+  --accent: #111827;
+  --accent-hover: #1f2937;
+  --accent-light: #f3f4f6;
   --danger: #e63946;
   --danger-light: #fff0f1;
   --danger-border: #fecdd3;
@@ -138,7 +138,7 @@ a:hover {
 
 .btn-register,
 .nav-links .btn-register {
-  background-color: var(--accent);
+  background-color: #111827;
   color: #ffffff !important;
   padding: 0.4rem 0.9rem;
   border-radius: var(--radius-sm);
@@ -148,7 +148,7 @@ a:hover {
 }
 
 .btn-register:hover {
-  background-color: var(--accent-hover);
+  background-color: #1f2937;
   transform: translateY(-1px);
 }
 
@@ -239,14 +239,14 @@ a:hover {
 }
 
 .btn-primary {
-  background-color: var(--accent);
+  background-color: #111827;
   color: #ffffff;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--accent-hover);
+  background-color: #1f2937;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .btn-secondary {
@@ -343,8 +343,8 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
 }
 
 input::placeholder,
@@ -639,22 +639,22 @@ textarea::placeholder {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: var(--accent);
+  background: #111827;
   color: #ffffff;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(67, 97, 238, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.15s ease;
   z-index: 50;
 }
 
 .fab-create:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(67, 97, 238, 0.5);
-  background: var(--accent-hover);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  background: #1f2937;
 }
 
 .fab-create:active {
@@ -751,32 +751,7 @@ textarea::placeholder {
   min-height: 140px;
 }
 
-.random-prompt-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.65rem;
-}
 
-.btn-random-prompt {
-  background: var(--bg-secondary);
-  border: 1px dashed var(--border-dark);
-  color: var(--text-secondary);
-  font-size: 0.78rem;
-  font-weight: 500;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.btn-random-prompt:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-light);
-}
 
 .char-count {
   position: absolute;
