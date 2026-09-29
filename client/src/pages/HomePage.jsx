@@ -31,13 +31,13 @@ const HomePage = () => {
       setError(null);
       const data = await getConfessions(pageNum, 20);
       const items = data.confessions || [];
-      
+
       if (isRefresh) {
         setConfessions(items);
       } else {
         setConfessions(prev => [...prev, ...items]);
       }
-      
+
       setHasMore(data.pagination ? pageNum < data.pagination.pages : items.length >= 20);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load confessions');
@@ -67,7 +67,7 @@ const HomePage = () => {
       {/* Header area */}
       <div className="feed-title-area">
         <h1 className="feed-main-title">Confessions</h1>
-        <p className="feed-tagline">speak your truth, stay anonymous</p>
+        <p className="feed-tagline">Post confessions anonymously that youre too afraid to admit publicly</p>
       </div>
 
       {loading && page === 1 ? (
@@ -113,8 +113,8 @@ const HomePage = () => {
           title="Write a confession"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
         </button>
       )}

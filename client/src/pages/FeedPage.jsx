@@ -32,13 +32,13 @@ const FeedPage = () => {
       setError(null);
       const data = await getConfessions(pageNum, 20);
       const items = data.confessions || [];
-      
+
       if (isRefresh) {
         setConfessions(items);
       } else {
         setConfessions(prev => [...prev, ...items]);
       }
-      
+
       setHasMore(data.pagination ? pageNum < data.pagination.pages : items.length >= 20);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load confessions');
@@ -74,26 +74,26 @@ const FeedPage = () => {
       </div>
 
       {confessions.length === 0 ? (
-        <EmptyState 
-          title="No Confessions" 
-          message="It's too quiet here. Be the first to confess." 
-          actionLabel="Create Confession" 
-          actionLink="/confessions/create" 
+        <EmptyState
+          title="No Confessions"
+          message="It's too quiet here. Be the first to confess."
+          actionLabel="Create Confession"
+          actionLink="/confessions/create"
         />
       ) : (
         <>
           <div className="confessions-feed">
             {confessions.map((confession, idx) => (
-              <ConfessionCard 
-                key={confession._id} 
-                confession={confession} 
+              <ConfessionCard
+                key={confession._id}
+                confession={confession}
                 onDelete={isModerator ? handleModeratorDelete : undefined}
                 deleteLabel={isModerator ? 'Remove (Mod)' : 'Delete'}
                 index={idx}
               />
             ))}
           </div>
-          
+
           {hasMore && (
             <div className="load-more-container">
               <button className="btn-load-more" onClick={handleLoadMore} disabled={loading}>
@@ -113,8 +113,8 @@ const FeedPage = () => {
           title="Write a confession"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
         </button>
       )}
