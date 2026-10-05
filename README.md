@@ -9,8 +9,6 @@ Write something. Give it a lifespan. Let it disappear.
 ## ✦ What it is
 
 - Anonymous-first confessions
-- Time-limited posts
-- Live expiration countdowns
 - Self-removal for your own posts
 - Minimal, distraction-free interface
 
